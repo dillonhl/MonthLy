@@ -1,0 +1,9 @@
+[
+  {
+    "username": "user_good",
+    "password": "pass_good",
+    "budget": 0,
+    "access_token": null,
+    "budget_categories": []
+  }
+]

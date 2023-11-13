@@ -1,0 +1,460 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --light: #f6f6f9;
+    --primary: #1976D2;
+    --light-primary: #CFE8FF;
+    --grey: #eee;
+    --dark-grey: #AAAAAA;
+    --dark: #363949;
+    --danger: #D32F2F;
+	--light-danger: #FECDD3;
+    --warning: #FBC02D;
+    --light-warning: #FFF2C6;
+    --success: #388E3C;
+    --light-success: #BBF7D0;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body{
+    background: var(--grey);
+    overflow-x: hidden;
+}
+
+body.dark{
+    --light: #181a1e;
+    --grey: #25252c;
+    --dark: #fbfbfb
+}
+
+.navbar {
+    background-color: var(--light); /* Change the background color to your preference */
+    padding: 10px 0; /* Adjust the padding as needed */
+    width: 100%;
+  }
+  
+  .navmenu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: space-between; /* Use space-around to evenly distribute space around menu items */
+    position: relative;
+    align-items: center;
+  }
+  
+  .navmenu .logo {
+    /* Place the "logo" on the left */
+    order: 1;
+    font-weight: bold;
+    font-size: 28px;
+    margin-right: 20px;
+  }
+  
+  .navmenu li {
+    margin-right: auto; /* Adjust the spacing between menu items */
+    margin-left: 20px;
+  }
+
+  .navbar .logout {
+    background-color: var(--dark);
+    border: none;
+    margin-right: 10px;
+    padding: 3px;
+    border-radius: 7px;
+  }
+
+  .logout:hover {
+    background-color: var(--danger); /* Change the background color on hover */
+}
+  
+  .navmenu a {
+    text-decoration: none;
+    color: var(--dark); /* Change the text color to your preference */
+  }
+  
+  .navmenu a:hover:not(.logo) {
+    text-decoration: underline; /* Add an underline on hover */
+  }
+
+  .navmenu li a i {
+    margin-right: 5px; /* Add padding between the <i> and text */
+  }
+
+.HomePage{
+    position: relative;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.HomePage .dashboard{
+    width: 100%;
+    padding: 36px 24px;
+    max-height: calc(100vh - 56px);
+}
+
+.HomePage .dashboard .header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    grid-gap: 16px;
+
+}
+
+.HomePage .dashboard .header .left h1{
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.HomePage .dashboard .header .left .breadcrumb{
+    display: flex;
+    align-items: center;
+    grid-gap: 16px;
+    background-color: var(--grey);
+    color: var(--dark);
+}
+
+
+.HomePage .dashboard .header .report{
+    padding: 3px 16px;
+    border-radius: 36px;
+    color: var(--dark);
+    align-items: center;
+    font-weight: 500;
+    padding-top: 45px;
+}
+
+.HomePage .dashboard .header .report input {
+    appearance: none;
+    text-align: center;
+}
+
+.HomePage .dashboard .header .report .budget{
+    width: 100px;
+    margin-left: 5px;
+    padding-left: 5px;
+    border-radius: 10px;
+}
+
+.HomePage .dashboard .insights{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-gap: 24px;
+    margin-top: 5px;
+}
+
+.HomePage .dashboard .insights li{
+    padding: 24px;
+    background: var(--light);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    grid-gap: 24px;
+    cursor: pointer;
+}
+
+.HomePage .dashboard .insights li .bx{
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    font-size: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.HomePage .dashboard .insights li:nth-child(1) .bx{
+    background: var(--light-primary);
+    color: var(--primary);
+}
+
+.HomePage .dashboard .insights li:nth-child(2) .bx{
+    background: var(--light-warning);
+    color: var(--warning);
+}
+
+.HomePage .dashboard .insights li:nth-child(3) .bx{
+    background: var(--light-success);
+    color: var(--success);
+}
+
+.HomePage .dashboard .insights li:nth-child(4) .bx{
+    background: var(--light-danger);
+    color: var(--danger);
+}
+
+.HomePage .dashboard .insights li .info h3{
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.HomePage .dashboard .insights li .info p{
+    color: var(--dark);
+}
+
+.HomePage .dashboard .bottom-data{
+    display: flex;
+    flex-wrap: wrap;
+    grid-gap: 24px;
+    margin-top: 24px;
+    width: 100%;
+    color: var(--dark);
+}
+
+.HomePage .dashboard .bottom-data>div{
+    border-radius: 20px;
+    background: var(--light);
+    padding: 24px;
+    overflow-x: auto;
+}
+
+.HomePage .dashboard .bottom-data .header{
+    display: flex;
+    align-items: center;
+    grid-gap: 16px;
+    margin-bottom: 24px;
+}
+
+.HomePage .dashboard .bottom-data .header h3{
+    margin-right: auto;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.HomePage .dashboard .bottom-data .header .bx{
+    cursor: pointer;
+}
+
+.HomePage .dashboard .bottom-data .orders{
+    flex-grow: 1;
+    flex-basis: 500px;
+    max-height: 400px;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.HomePage .dashboard .bottom-data .orders table{
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.HomePage .dashboard .bottom-data .orders table th{
+    padding-bottom: 12px;
+    font-size: 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--grey);
+}
+
+.HomePage .dashboard .bottom-data .orders table td{
+    padding: 16px 0;
+    padding-right: 5px;
+}
+
+
+.HomePage .dashboard .bottom-data .orders table tbody tr{
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.HomePage .dashboard .bottom-data .orders table tbody tr:hover{
+    background: var(--grey);
+}
+
+.HomePage .dashboard .bottom-data .orders table tr td {
+    font-size: 13px;
+    color: var(--dark);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 50px;
+}
+
+.HomePage .dashboard .bottom-data .reminders{
+    flex-grow: 1;
+    flex-basis: 300px;
+    max-height: 400px;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.HomePage .dashboard .bottom-data .reminders .form-container{
+    position: absolute;
+    z-index: 10000; /* Set a high z-index to place it above other elements */
+    right: 20px;
+    background: white;
+    padding: 20px;
+    margin: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-container select,
+.form-container input {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px; /* Add margin at the bottom of each input */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.HomePage .dashboard .bottom-data .reminders .task-list{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.HomePage .dashboard .bottom-data .reminders .task-list li{
+    width: 100%;
+    margin-bottom: 16px;
+    background: var(--grey);
+    padding: 14px 10px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+
+}
+
+.HomePage .dashboard .bottom-data .reminders .task-list li .budget-amount{
+    margin-left: auto;
+}
+
+.HomePage .dashboard .bottom-data .reminders .task-list li .task-title{
+    display: flex;
+    align-items: center;
+    
+}
+
+.HomePage .dashboard .bottom-data .reminders .task-list li .task-title span{
+    margin-left: 6px;
+}
+
+.HomePage .dashboard .bottom-data .reminders .task-list li .bx{
+    cursor: pointer;  
+}
+
+.orders::-webkit-scrollbar, .reminders::-webkit-scrollbar{
+    display: none;
+}
+
+.HomePage .transactions-container .header, 
+.HomePage .analytics-container .header{
+    display: flex;
+    padding: 25px;
+    color: var(--dark);
+}
+.HomePage .analytics-container ,
+.HomePage .transactions-container{
+    border: 2px solid var(--dark); /* Adjust border color */
+    border-radius: 10px; /* Adjust border radius */
+    padding: 10px;
+    max-height: 800px; /* Adjust the maximum height as needed */
+    overflow-y: auto;
+    margin: 20px; /* Center the container horizontally */
+}
+.HomePage .transactions-container table,
+.HomePage .analytics-container table  {
+    color: var(--dark);
+    max-height: 600px;
+
+}
+
+@media screen and (max-width: 768px) {
+    .HomePage{
+        min-width: 445px;
+        width: calc(100%);
+    }
+
+}
+
+@media screen and (max-width: 735px) {
+    .navmenu li a:not(.logo) span{
+        font-size: 12px; /* Set the font size to 0 to hide the text */
+    }
+    .logout {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .navmenu li a:not(.logo) span{
+        font-size: 10px; /* Set the font size to 0 to hide the text */
+    }
+    .logout {
+        font-size: 10px;
+    }
+}
+
+@media screen and (max-width: 605px) {
+    .navmenu li a:not(.logo) span{
+        font-size: 0px; /* Set the font size to 0 to hide the text */
+    }
+    .navmenu li a:not(.logo) i{
+        justify-content: space-between; 
+        font-size: 20px; /* Set the font size to 0 to hide the text */
+    }
+    
+    .logout {
+        font-size: 12px;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    
+    .HomePage nav form .form-input input{
+        display: none;
+    }
+
+    .HomePage nav form .form-input button{
+        width: auto;
+        height: auto;
+        background: transparent;
+        color: var(--dark);
+        border-radius: none;
+    }
+
+    .HomePage nav form.show .form-input input{
+        display: block;
+        width: 100%;
+    }
+
+    .HomePage nav form.show .form-input button{
+        width: 36px;
+        height: 100%;
+        color: var(--light);
+        background: var(--danger);
+        border-radius: 0 36px 36px 0;
+    }
+
+    .HomePage nav form.show~.notif, .HomePage nav form.show~.profile{
+        display: none;
+    }
+
+    .HomePage .dashboard .insights {
+        grid-template-columns: 1fr;
+    }
+
+    .HomePage .dashboard .bottom-data .header{
+        min-width: 340px;
+    }
+
+    .HomePage .dashboard .bottom-data .orders table{
+        min-width: 340px;
+    }
+
+    .HomePage .dashboard .bottom-data .reminders .task-list{
+        min-width: 340px;
+    }
+
+}
