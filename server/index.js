@@ -76,6 +76,7 @@ app.post('/get_access_token', async(req, res, next) => {
     // populate account info
     await populateAccountNames(accessToken);
     res.json({ status: "success" })
+    return;
   })
 
 app.post('/get_balance', async(req, res) =>{
@@ -92,6 +93,7 @@ app.post('/update_budget', async(req, res) => {
   const userID = req.body.userID;
   const budget = req.body.budget;
   await db.updateBudget(userID, budget);
+  return;
 })
 
 app.post('/login', async (req, res) => {
@@ -102,8 +104,12 @@ app.post('/login', async (req, res) => {
     const password = req.body.password;
     const result = await db.getUser(username,password);
     console.log(result);
-    console.log("app.post before return");
-    return res.send({userID: result.id, username: result.username});
+    if (result)
+      return res.send({userID: result.id, username: result.username});
+    else {
+      console.log("Incorrect username/password")
+      return null;
+    }
   } catch (error) {
     console.error(error);
   }
@@ -245,6 +251,7 @@ app.post('/add_budget_item_to_db', async(req, res) => {
   console.log("app.post add_budget_to_db");
   const data = req.body;
   await db.addBudgetToList(data.user_id, data.category, data.amount);
+  return;
 })
 
 app.post('/delete_budget_item', async(req, res) => {
@@ -252,6 +259,7 @@ app.post('/delete_budget_item', async(req, res) => {
   const data = req.body;
   console.log(req.body);
   await db.removeBudgetFromList(req.body.userID, req.body.category, req.body.budget);
+  return;
 })
 
 // Get bank name from plaid

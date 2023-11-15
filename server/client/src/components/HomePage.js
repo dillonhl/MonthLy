@@ -118,7 +118,7 @@ export const Dashboard = (props) => {
             }
         };
         getData();
-    }, [props.aggregatedData]);
+    }, [props.aggregatedData, budget]);
 
     async function getMonthExpenses() {
         try{
@@ -145,7 +145,7 @@ export const Dashboard = (props) => {
             const today = new Date();
             const currentMonth = today.getMonth() + 1;
             const currentYear = today.getFullYear();
-            const yearString = `${currentYear}`;
+            //const yearString = `${currentYear}`;
             let totalSaved = 0.00;
             // Filter out the current year from the transactions
             const currentYearData = Object.fromEntries(
@@ -201,7 +201,7 @@ export const Dashboard = (props) => {
                 <i className='bx bx-check-circle'></i>
                 <span>{category}</span>
             </div>
-            <span className="budget-amount" style={{ paddingRight: '10px' }}>${amount}</span>
+            <span className="budget-amount" style={{ paddingRight: '10px', paddingLeft: '5px' }}>${amount}</span>
             <i className='bx bx-trash bx-flip-horizontal' onClick={(e) => delBudget(e, category, amount)}></i></>);
     }
 
@@ -280,13 +280,13 @@ export const Dashboard = (props) => {
                     <li>
                     <i className='bx bx-dollar-circle' ></i>
                         <span className="info">
-                            <h3>${balance}</h3>
+                            <h3>${balance.toFixed(2)}</h3>
                             <p>Account Balance</p>
                         </span>
                     </li>
                     <li><i className='bx bx-money-withdraw'></i>
                         <span className="info">
-                            <h3>${monthlyExpenses}</h3>
+                            <h3>${monthlyExpenses.toFixed(2)}</h3>
                             <p>This Month's Expenses</p>
                         </span>
                     </li>
@@ -298,7 +298,7 @@ export const Dashboard = (props) => {
                     </li>
                     <li><i className='bx bx-wallet-alt bx-flip-horizontal' ></i>
                         <span className="info">
-                            <h3>${totalSaved}</h3>
+                            <h3>${totalSaved.toFixed(2)}</h3>
                             <p>Total Saved This Year</p>
                         </span>
                     </li>

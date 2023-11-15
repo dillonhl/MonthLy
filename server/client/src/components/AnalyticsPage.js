@@ -1,15 +1,15 @@
 import { Table } from 'reactstrap';
 import React, { useEffect, useState } from 'react';
 const monthMapping = {
-    '01': 'January',
-    '02': 'February',
-    '03': 'March',
-    '04': 'April',
-    '05': 'May',
-    '06': 'June',
-    '07': 'July',
-    '08': 'August',
-    '09': 'September',
+    '1': 'January',
+    '2': 'February',
+    '3': 'March',
+    '4': 'April',
+    '5': 'May',
+    '6': 'June',
+    '7': 'July',
+    '8': 'August',
+    '9': 'September',
     '10': 'October',
     '11': 'November',
     '12': 'December',
@@ -67,7 +67,7 @@ export const AnalyticsPage = (props) => {
         const rows = yearData.map(([month, data]) => (
             data.category !== null ? (
                 <tr key={month}>
-                    <td>{month}</td>
+                    <td>{monthMapping[month.split('-')[1]]}</td>
                     <td>{data.category}</td>
                     <td>{data.amount}</td>
                 </tr>
@@ -75,7 +75,6 @@ export const AnalyticsPage = (props) => {
         ));
         return rows;
     }
-    
 
     return (
         <>
@@ -84,8 +83,15 @@ export const AnalyticsPage = (props) => {
                     <h1>Analytics</h1>
                 </div>
                 <div className="analytics">
-                    <button onClick={() => handleYearButton(currentYear)}>{currentYear}</button>
-                    <button onClick={() => handleYearButton(currentYear-1)}>{currentYear-1}</button>
+                    <button onClick={() => handleYearButton(currentYear)} 
+                        style={{backgroundColor : year === currentYear ? '#181a1e' : '#fbfbfb',
+                            color : year === currentYear ? '#fbfbfb' : '#181a1e' }}>
+                                {currentYear} 
+                    </button>
+                    <button onClick={() => handleYearButton(currentYear-1)}
+                        style={{backgroundColor : year === currentYear-1 ? '#181a1e' : '#fbfbfb',
+                            color : year === currentYear-1 ? '#fbfbfb' : '#181a1e' }}>
+                                {currentYear-1}</button>
                     <Table>
                         <thead>
                             <tr>

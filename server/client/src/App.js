@@ -136,7 +136,6 @@ class App extends React.PureComponent {
     return (
       <>
       <div className="App">
-
         { // Login page
           this.state.currentForm === "login" ? <Login onFormSwitch={this.toggleForm} setUserID={this.setUserID}/> : <></>
         }
