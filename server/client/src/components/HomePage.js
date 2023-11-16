@@ -189,9 +189,17 @@ export const Dashboard = (props) => {
     }, [showForm]);
 
     const createNewBudgetListItem = (category, amount) => {
+        const today = new Date();
+        const currentMonth = today.getMonth() + 1; // Months are zero-based, so add 1
+        const currentYear = today.getFullYear();
+        const yearMonthString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}`;
+        const spent = props.aggregatedData[yearMonthString]?.[category.toUpperCase()] || 0;
+        const checkAmount = amount >= spent;
+        const icon = checkAmount ? 'bx-check-circle' : 'bx-x-circle';
+        const iconStyle = checkAmount ? { color: 'green' } : { color: 'red' };
         return (<>
             <div className="task-title">
-                <i className='bx bx-check-circle'></i>
+                <i className={`bx ${icon}`} style={iconStyle}></i>
                 <span>{category}</span>
             </div>
             <span className="budget-amount" style={{ paddingRight: '10px', paddingLeft: '5px' }}>${amount}</span>
@@ -234,17 +242,6 @@ export const Dashboard = (props) => {
         // edit database
         await axios.post('http://localhost:5000/delete_budget_item', {userID: props.userID, category: category, budget: budget});
     }
-
-    // useEffect for budgetList functionality
-    useEffect(() => {
-        const checkBudgetList = () => {
-            const today = new Date();
-            const currentMonth = today.getMonth() + 1; // Months are zero-based, so add 1
-            const currentYear = today.getFullYear();
-            const yearMonthString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}`;
-        }
-        
-    }, [props.aggregatedData, categoryBudgets]);
 
     return (
         <div>

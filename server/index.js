@@ -268,6 +268,7 @@ app.post('/add_budget_item_to_db', async(req, res) => {
   console.log("app.post add_budget_to_db");
   const data = req.body;
   await db.addBudgetToList(data.user_id, data.category, data.amount);
+  console.log("return add_budget")
   return;
 })
 

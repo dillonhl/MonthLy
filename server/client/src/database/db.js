@@ -168,8 +168,10 @@ const initializeDatabase = async function () {
   const addBudgetToList = async function (userID, category, amount) {
     const result = await db.run(
       `INSERT INTO budgets (user_id, category, amount) VALUES (?, ?, ?)`, 
-      userID, category, amount
+      [userID, category, amount]
     );
+    console.log(`add budget ${category}`);
+    return;
   }
 
   const getBudgetList = async function (userID) {
@@ -347,7 +349,7 @@ const removeBudgetFromList = async function(userID, category, amount) {
   try {
     await db.run(
       `DELETE FROM budgets WHERE user_id = ? AND category = ? AND amount = ?`,
-      userID, category, amount
+      [userID, category, amount]
     );
   } catch (error) {
     console.log(
