@@ -1,5 +1,7 @@
 import { Table } from 'reactstrap';
 import React, { useEffect, useState } from 'react';
+
+// Needed to map month to number from data ex. 2023-11 = November
 const monthMapping = {
     '1': 'January',
     '2': 'February',
@@ -69,7 +71,7 @@ export const AnalyticsPage = (props) => {
                 <tr key={month}>
                     <td>{monthMapping[month.split('-')[1]]}</td>
                     <td>{data.category}</td>
-                    <td>{data.amount}</td>
+                    <td>{data.amount.toFixed(2)}</td>
                 </tr>
                 ) : null
         ));

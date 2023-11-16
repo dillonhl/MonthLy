@@ -7,7 +7,7 @@ import { Dashboard, HomePage } from './components/HomePage';
 import './login.css';
 import { AnalyticsPage } from './components/AnalyticsPage';
 import { TransactionsPage } from './components/TransactionsPage';
-
+import { LoadingPage } from './components/LoadingPage';
 class App extends React.PureComponent {
   state = {
             currentForm: "login",
@@ -15,6 +15,7 @@ class App extends React.PureComponent {
             token: null,
             userID: "null",
             aggregatedData: [],
+            balance: 0.00,
             loggedIn: false,
           }
 
@@ -34,10 +35,19 @@ class App extends React.PureComponent {
       console.log(`Switch for page: ${pageName}`);
     }
     if (pageName === 'logout') {
-      this.setState({currentForm: 'login'});
-      this.setState({currentPage: 'null'})
+      this.logout();
       console.log(`Logging Out, go to Login Page`);
     }
+  }
+  // reset states
+  logout = () => {
+    this.setState({currentForm: 'login'});
+    this.setState({currentPage: 'null'});
+    this.setState({userID: "null"});
+    this.setState({aggregatedData: []});
+    this.setState({token: null});
+    this.setState({loggedIn: false});
+    this.setState({balance: 0.0});
   }
 
   //connects to plaid to create temporary link token
@@ -56,8 +66,14 @@ class App extends React.PureComponent {
     const userID = this.state.userID;
     // Get access token and also populate databases
     const res = await axios.post('http://localhost:5000/get_access_token', {publicToken: publicToken, userID: userID})
-
-    await this.getTransactionsSync();
+    if (res.data.status === "success"){
+      this.setState({currentPage: "LoadingPage"});
+      await this.getTransactionsSync();
+      await this.handleTransactions();
+      await this.getBalance();
+      this.setState({currentPage: "HomePage"});
+    }
+    
   }
 
   setUserID = (userID) => {
@@ -73,6 +89,7 @@ class App extends React.PureComponent {
         if (isConnected) {
           this.getTransactionsSync();
           this.handleTransactions();
+          this.getBalance();
           this.setState({loggedIn: true})
           console.log('User is connected');
         }
@@ -87,7 +104,6 @@ class App extends React.PureComponent {
   // Check if bank is connected
   checkConnected = async (userID) => {
     const itemInfo = await axios.post('http://localhost:5000/item_info', {userID: userID});
-    console.log(itemInfo)
     if (itemInfo.data) {
       return true;
     }
@@ -132,6 +148,12 @@ class App extends React.PureComponent {
     }
   }
 
+  // get balance from plaid
+  getBalance = async () => {
+    const balanceInfo = await axios.post('http://localhost:5000/get_balance', {userID: this.state.userID});
+    this.setState({balance: balanceInfo.data.balance});
+}
+
   render(){
     return (
       <>
@@ -140,21 +162,24 @@ class App extends React.PureComponent {
           this.state.currentForm === "login" ? <Login onFormSwitch={this.toggleForm} setUserID={this.setUserID}/> : <></>
         }
         { // Signup page
-          this.state.currentForm === "signup" ? <SignUp onFormSwitch={this.toggleForm}/> : <></>
+          this.state.currentForm === "signup" ? <SignUp onFormSwitch={this.toggleForm} setUserID={this.setUserID}/> : <></>
         }
         <div className="HomePage">
           { // User logged in, go to home page, display navbar
             this.state.currentForm === "HomePage" ? <HomePage onPageSwitch={this.togglePage}/> : <></>
           }  
           { // display dashboard
-            this.state.currentForm === "HomePage"  && this.state.loggedIn ? <Dashboard aggregatedData={this.state.aggregatedData} token ={this.state.token} linkBank={this.linkBank} userID={this.state.userID}
-                                                      currentPage={this.state.currentPage}/> : <></>
+            this.state.currentPage === "HomePage" ? <Dashboard aggregatedData={this.state.aggregatedData} balance={this.state.balance} token ={this.state.token} 
+                                                                            linkBank={this.linkBank} userID={this.state.userID} currentPage={this.state.currentPage}/> : <></>
           }
           { // display analytics page
             this.state.currentPage === "AnalyticsPage" ? <AnalyticsPage aggregatedData={this.state.aggregatedData} userID={this.state.userID}/> : <></>
           }
           { // display transactions page
             this.state.currentPage === "TransactionsPage" ? <TransactionsPage aggregatedData={this.state.aggregatedData} userID={this.state.userID}/> : <></>
+          }
+          { // Display loading page when connecting bank
+            this.state.currentPage === "LoadingPage" ? <LoadingPage/> : <></>
           }
         </div>
 

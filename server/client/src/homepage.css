@@ -349,7 +349,8 @@ body.dark{
 }
 
 .HomePage .transactions-container .header, 
-.HomePage .analytics-container .header{
+.HomePage .analytics-container .header,
+.HomePage .Loading .header{
     display: flex;
     padding: 25px;
     color: var(--dark);
@@ -368,6 +369,10 @@ body.dark{
     color: var(--dark);
     max-height: 600px;
 
+}
+.HomePage .transactions-container::-webkit-scrollbar,
+.HomePage .analytics-container::-webkit-scrollbar {
+    display: none;
 }
 
 @media screen and (max-width: 768px) {

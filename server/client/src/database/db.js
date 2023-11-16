@@ -95,7 +95,8 @@ const initializeDatabase = async function () {
     const result = await db.run(
       `INSERT INTO users(username, password) VALUES("${username}", "${password}")`
     );
-    return result;
+    console.log(result.lastID)
+    return result.lastID;
   };
 
   const getUserList = async function () {
@@ -195,7 +196,6 @@ const initializeDatabase = async function () {
  */
 const addNewTransaction = async function (transactionObj) {
   try {
-    console.log(`Getting ready to insert ${JSON.stringify(transactionObj)}`);
     const result = await db.run(
       `
   INSERT INTO transactions 
@@ -212,11 +212,6 @@ const addNewTransaction = async function (transactionObj) {
       transactionObj.amount,
       transactionObj.currencyCode
     );
-
-    if (transactionObj.pendingTransactionId != null) {
-      // This might be a good time to copy over any user-created values from
-      // that other transaction to this one.
-    }
 
     return result;
   } catch (error) {
@@ -361,13 +356,13 @@ const removeBudgetFromList = async function(userID, category, amount) {
   }
 }
 
-const getTransactionsByMonth = async function(year,month) {
+const getTransactionsByMonth = async function(userID, year, month) {
   const startOfMonth = `${year}-${month.toString().padStart(2, '0')}-01`;
   const endOfMonth = `${year}-${(month + 1).toString().padStart(2, '0')}-01`;
 
   const results = await db.all(`
     SELECT * FROM transactions
-    WHERE date >= '${startOfMonth}' AND date < '${endOfMonth}';
+    WHERE user_id = '${userID}' AND date >= '${startOfMonth}' AND date < '${endOfMonth}';
     `);
     //console.log(results);
   return results;

@@ -63,7 +63,6 @@ async function getBudgets(user_id) {
 // List of transaction categories according to plaid
 const categoriesList = ["Bank fees","Entertainment", "Travel", "Food & drink", "General merchandise", "General services", "Government & non-profit", "Home improvement", "Income", "Loan payments", "Medical", "Personal care", "Rent & utilities", "Transfer in", "Transfer out", "Transportation" ];
 export const Dashboard = (props) => {
-    const [balance, setBalance] = useState(0);
     const [monthlyExpenses, setMonthlyExpenses] = useState(0);
     const [totalSaved, setTotalSaved] = useState(0.00);
     const [budget, setBudget] = useState(0);
@@ -91,9 +90,6 @@ export const Dashboard = (props) => {
                     // Get most recent transactions for container
                     const recentTransactionsInfo = await axios.post('http://localhost:5000/get_recent_transactions', {userID: props.userID});
                     setRecentTransactions(recentTransactionsInfo.data);
-                    // get balance from plaid
-                    const balanceInfo = await axios.post('http://localhost:5000/get_balance', {userID: props.userID});
-                    setBalance(balanceInfo.data.balance);
                 }
                 setLoading(false); // finished loading initial data
             } catch (error) {
@@ -128,7 +124,6 @@ export const Dashboard = (props) => {
             const currentYear = today.getFullYear();
             const yearMonthString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}`;
             let sum = 0.00;
-            console.log(props.aggregatedData[yearMonthString]);
             const data = props.aggregatedData[yearMonthString]
             for (const category in data) { // add up each category to get total expenses for the month
                 sum = sum + data[category];
@@ -162,8 +157,6 @@ export const Dashboard = (props) => {
                         sum = sum + data[category];
                     }
                     totalSaved = totalSaved + (budget - sum); // add how much was saved in the month
-                    console.log(`total saved: ${totalSaved}`);
-
                     sum = 0.00;
                 }
             }
@@ -255,7 +248,7 @@ export const Dashboard = (props) => {
 
     return (
         <div>
-            <div className="dashboard" style={{ display: props.currentPage === "HomePage" ? "block" : "none" }}> 
+            <div className="dashboard"> 
                 <div className="header">
                     <div className="left">
                         <h1>Dashboard</h1>
@@ -280,7 +273,7 @@ export const Dashboard = (props) => {
                     <li>
                     <i className='bx bx-dollar-circle' ></i>
                         <span className="info">
-                            <h3>${balance.toFixed(2)}</h3>
+                            <h3>${props.balance.toFixed(2)}</h3>
                             <p>Account Balance</p>
                         </span>
                     </li>

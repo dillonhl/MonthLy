@@ -69,14 +69,18 @@ app.post('/get_access_token', async(req, res, next) => {
     const accessToken = response.data.access_token;
     console.log("app.post get_access_token:")
     console.log(response);
-    // Add new item to db
-    await db.addItem(itemID, userID, accessToken);
-    // Populate bank name
-    await populateBankName(itemID, accessToken);
-    // populate account info
-    await populateAccountNames(accessToken);
-    res.json({ status: "success" })
-    return;
+    if (accessToken){ // check if received access token
+      // Add new item to db
+      await db.addItem(itemID, userID, accessToken);
+      // Populate bank name
+      await populateBankName(itemID, accessToken);
+      // populate account info
+      await populateAccountNames(accessToken);
+      return res.json({ status: "success" })
+  }
+  else {
+    return res.json({status: "failure"});
+  }
   })
 
 app.post('/get_balance', async(req, res) =>{
@@ -114,6 +118,18 @@ app.post('/login', async (req, res) => {
     console.error(error);
   }
 });
+app.post('/register', async (req, res) => {
+  try {
+    const username = req.body.username;
+    const password = req.body.password;
+    const result = await db.addUser(username, password);
+    console.log("Result:")  
+    console.log(result)
+    return res.send({userID: result});
+  } catch (error) {
+    console.error(error);
+  }
+})
 
 app.post("/transactions/sync", async (req, res, next) => {
     try {
@@ -210,7 +226,7 @@ const fetchNewSyncData = async function (accessToken, initialCursor, retriesLeft
           error
         )} Let's try again from the beginning!`
       );
-      await setTimeout(1000);
+      //await setTimeout(1000);
       return fetchNewSyncData(accessToken, initialCursor, retriesLeft - 1);
     }
   };
@@ -221,6 +237,7 @@ app.post('/get_recent_transactions', async(req, res) => {
   return res.send(response);
 })
 
+// Old way, not needed
 app.post('/get_transactions', async(req, res) => {
   console.log("app.post /get_transactions")
   const maxNum = 1000;
@@ -310,13 +327,13 @@ app.post('/get_monthly_transactions', async(req, res) => {
   return res.send({results});
 })
 
-async function getAllTransactions() {
+async function getAllTransactions(userID) {
   const allTransactions = {};
 
   for (let year = 2022; year <= 2023; year++) {
     for (let month = 1; month <= 12; month++) {
       const key = `${year}-${month}`;
-      allTransactions[key] = await db.getTransactionsByMonth(year, month);
+      allTransactions[key] = await db.getTransactionsByMonth(userID,year, month);
     }
   }
   return allTransactions;

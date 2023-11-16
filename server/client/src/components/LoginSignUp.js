@@ -5,7 +5,9 @@ import axios from "axios";
 async function addUser(username, password) {
     try {
       const res = await axios.post('http://localhost:5000/register', {username: username, password: password});
-      // check if new user was added, return eitehr newUser or error
+      // check if new user was added, return either newUser or error
+      console.log("adduser func")
+      console.log(res)
       return res.data;
     } catch (error) {
       // Handle any file read or write errors here
@@ -70,10 +72,13 @@ export const SignUp = (props) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newUser = await addUser(username, password);
-        if (newUser.error) {
+        console.log("New User: ")
+        console.log(newUser)
+        if (newUser === null) {
             console.error(newUser.error);
         }else {// redirect to home 
-            props.onFormSwitch('HomePage')
+            props.setUserID(newUser.userID);
+            props.onFormSwitch('HomePage');
         }
     }
 
