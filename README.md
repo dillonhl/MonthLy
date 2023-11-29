@@ -1,4 +1,4 @@
-# Monthly Application : PlaidAPI, ReactJS, Node/Express
+# MonthLy Application : PlaidAPI, ReactJS, Node/Express
 
 This app uses the Plaid API to connect to a bank account to load transactions.  This is set up with ReactJS on the front end and NodeJS/Express on the backend. A local database will be created on first server run.<br/>
 
