@@ -9,7 +9,6 @@ export const HomePage = (props) => {
         e.preventDefault();
         props.onPageSwitch('logout');
     }
-    console.log("display navbar");
     
     return (
         <div>
@@ -35,8 +34,7 @@ export const HomePage = (props) => {
 async function getItemInfo(user_id) {
     try {
         const result = await axios.post('http://localhost:5000/item_info', {userID: user_id});
-        console.log("returning getItemInfo");
-        console.log(result);
+
         return result;
     } catch (error) {
         // Handle any file read or write errors here
@@ -48,9 +46,7 @@ async function getItemInfo(user_id) {
 // Get budget list from budgets table
 async function getBudgets(user_id) {
     try{
-        console.log("getbudgets");
         const result = await axios.post('http://localhost:5000/get_budgets', {userID: user_id}) ;
-        console.log(result);
         return result;
     } catch (error) {
         // Handle any file read or write errors here
@@ -107,8 +103,13 @@ export const Dashboard = (props) => {
                 // Get most recent transactions for container
                 const expenses = await getMonthExpenses(); // Get expenses summed up for the month
                 setMonthlyExpenses(expenses);
-                const saved = await getTotalSaved(); // get total saved for the year
-                setTotalSaved(saved);
+                if (budget === 0) {
+                    setTotalSaved(0.00);
+                }
+                else{
+                    const saved = await getTotalSaved(); // get total saved for the year
+                    setTotalSaved(saved);
+                }
             } catch (error) {
                 console.log('Error getting data: ', error);
             }
@@ -136,6 +137,11 @@ export const Dashboard = (props) => {
 
     async function getTotalSaved() {
         try {
+            // budget is 0
+            if (budget === 0 || budget === 0.00 || budget === "0" || budget === null || budget === "") {
+                return 0.00;
+            }
+
             // Check how much spent per month for the year
             const today = new Date();
             const currentMonth = today.getMonth() + 1;
@@ -154,7 +160,9 @@ export const Dashboard = (props) => {
                     const data = props.aggregatedData[month]
                     let sum = 0.00;
                     for (const category in data) { // add up all of the categories in aggregated data to get the expenses per month
-                        sum = sum + data[category];
+                        if (category !== "INCOME" && category !== "Transfer In" && data[category] > 0) {
+                            sum = sum + data[category];
+                        }
                     }
                     totalSaved = totalSaved + (budget - sum); // add how much was saved in the month
                     sum = 0.00;
@@ -202,7 +210,7 @@ export const Dashboard = (props) => {
                 <i className={`bx ${icon}`} style={iconStyle}></i>
                 <span>{category}</span>
             </div>
-            <span className="budget-amount" style={{ paddingRight: '10px', paddingLeft: '5px' }}>${amount}</span>
+            <span className="budget-amount" style={{ paddingRight: '10px', paddingLeft: '5px' }}>${spent} / {amount}</span>
             <i className='bx bx-trash bx-flip-horizontal' onClick={(e) => delBudget(e, category, amount)}></i></>);
     }
 

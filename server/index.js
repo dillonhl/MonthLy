@@ -5,6 +5,8 @@ const cors = require('cors');
 const {SimpleTransaction} = require('./client/src/database/simpleTransactionObject');
 const db = require('./client/src/database/db');
 const { Configuration, PlaidEnvironments, PlaidApi } = require("plaid");
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const app = express();
 app.use(cors())
@@ -14,7 +16,6 @@ app.use(bodyParser.json());
 (async () => {
   try {
     await db.initializeDatabase(); // Initialize the database
-    console.log(db);
   } catch (error) {
     console.error("Error adding new user:", error);
   }
@@ -32,9 +33,20 @@ const plaidConfig = new Configuration({
 });
 const client = new PlaidApi(plaidConfig);
 
+// hash password for security
+async function hashPassword(password) {
+  try {
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    return hashedPassword;
+  } catch (error) {
+    console.error("Error hashing password:", error);
+    return null;
+  }
+}
+
 // Create link token
 app.post('/create_link_token', async (req, res, next) => {
-  console.log(`app.post create_link_token with userID: ${req.body.userID}`)
     try{
       const response = await client.linkTokenCreate({
         user: {
@@ -51,7 +63,6 @@ app.post('/create_link_token', async (req, res, next) => {
           },
         },
       })
-      //console.log(`app.post create_link_token result: ${response.data.link_token}`)
       return res.send({link_token: response.data.link_token}) 
       } catch (error) {
         console.log(`Running into an error!`);
@@ -67,8 +78,6 @@ app.post('/get_access_token', async(req, res, next) => {
     const response = await client.itemPublicTokenExchange({public_token: publicToken});
     const itemID = response.data.item_id;
     const accessToken = response.data.access_token;
-    console.log("app.post get_access_token:")
-    console.log(response);
     if (accessToken){ // check if received access token
       // Add new item to db
       await db.addItem(itemID, userID, accessToken);
@@ -89,7 +98,6 @@ app.post('/get_balance', async(req, res) =>{
     const accounts = response.data.accounts;
     // Calculate the sum of balances.available
     const totalBalance = accounts.reduce((sum, item) => sum + item.balances.current, 0);
-    console.log(`balance: ${totalBalance}`)
     return res.send({balance: totalBalance}) 
   })
 
@@ -102,12 +110,11 @@ app.post('/update_budget', async(req, res) => {
 
 app.post('/login', async (req, res) => {
   try {
-    console.log("app.post login");
-    console.log(req.body)
     const username = req.body.username;
     const password = req.body.password;
-    const result = await db.getUser(username,password);
-    console.log(result);
+    const hashedPassword = await hashPassword(password);
+    // const result = await db.getUser(username, hashedPassword);
+    const result = await db.getUser(username, password);
     if (result)
       return res.send({userID: result.id, username: result.username});
     else {
@@ -122,9 +129,9 @@ app.post('/register', async (req, res) => {
   try {
     const username = req.body.username;
     const password = req.body.password;
-    const result = await db.addUser(username, password);
-    console.log("Result:")  
-    console.log(result)
+    const hashedPassword = await hashPassword(password);
+    const result = await db.addUser(username, hashedPassword);
+    //const result = await db.addUser(username, password);
     return res.send({userID: result});
   } catch (error) {
     console.error(error);
@@ -166,7 +173,6 @@ const syncTransactions = async function (userID, itemID) {
   // 4. Updated any modified transactions
   await Promise.all(allData.modified.map(async (txnObj) => {
       const simpleTransaction = SimpleTransaction.fromPlaidTransaction(txnObj, userID);
-      //console.log(`I want to add ${JSON.stringify(simpleTransaction)}`);
       const result = await db.modifyExistingTransaction(simpleTransaction);
       if (result) {
       summary.modified += result.changes;
@@ -215,7 +221,6 @@ const fetchNewSyncData = async function (accessToken, initialCursor, retriesLeft
           `Added: ${newData.added.length} Modified: ${newData.modified.length} Removed: ${newData.removed.length}`
         );
       } while (keepGoing == true);
-      console.log('All done!');
       console.log(`Final Cursor: ${allData.nextCursor}`);
       return allData;
     } catch (error) {
@@ -232,23 +237,19 @@ const fetchNewSyncData = async function (accessToken, initialCursor, retriesLeft
   };
 
 app.post('/get_recent_transactions', async(req, res) => {
-  console.log("app.post /get_recent");
   const response = await db.getRecentTransactions(req.body.userID);
   return res.send(response);
 })
 
 // Old way, not needed
 app.post('/get_transactions', async(req, res) => {
-  console.log("app.post /get_transactions")
   const maxNum = 1000;
   const response = await db.getTransactions(req.body.userID, maxNum);
   return res.send(response);
 })
 
 app.post('/item_info', async(req, res) => {
-  console.log("app.post /item_info")
   const response = await db.getItemInfo(req.body.userID)
-  console.log(response);
   // need to change the res.send if no entry in db
   if (response)
     return res.send({id: response.id, budget: response.budget, accessToken: response.access_token});
@@ -258,24 +259,18 @@ app.post('/item_info', async(req, res) => {
 })
 
 app.post('/get_budgets', async(req, res) => {
-  console.log("app.post /get_budgets");
   const response = await db.getBudgetList(req.body.userID);
-  console.log(response);
   return res.send(response);
 })
 
 app.post('/add_budget_item_to_db', async(req, res) => {
-  console.log("app.post add_budget_to_db");
   const data = req.body;
   await db.addBudgetToList(data.user_id, data.category, data.amount);
-  console.log("return add_budget")
   return;
 })
 
 app.post('/delete_budget_item', async(req, res) => {
-  console.log("app.post delete_budget_item");
   const data = req.body;
-  console.log(req.body);
   await db.removeBudgetFromList(req.body.userID, req.body.category, req.body.budget);
   return;
 })
@@ -286,7 +281,6 @@ const populateBankName = async (itemId, accessToken) => {
     const itemResponse = await client.itemGet({
       access_token: accessToken,
     });
-    //console.log(itemResponse)
     const institutionId = itemResponse.data.item.institution_id;
     if (institutionId == null) {
       return;
@@ -296,7 +290,6 @@ const populateBankName = async (itemId, accessToken) => {
       country_codes: ["US"],
     });
     const institutionName = institutionResponse.data.institution.name;
-    //console.log(institutionName);
     await db.addBankNameForItem(itemId, institutionName);
   } catch (error) {
     console.log(`Ran into an error! ${error}`);
@@ -308,8 +301,6 @@ const populateAccountNames = async (accessToken) => {
   try {
     const acctsResponse = await client.accountsGet({access_token: accessToken,});
     const acctsData = acctsResponse.data;
-    console.log("acctsData: ");
-    console.log(acctsData);
     const itemId = acctsData.item.item_id;
     await Promise.all(
       acctsData.accounts.map(async (acct) => {
@@ -323,7 +314,6 @@ const populateAccountNames = async (accessToken) => {
 };
 
 app.post('/get_monthly_transactions', async(req, res) => {
-  console.log('app.post /get_monthly');
   const results = await getAllTransactions(req.body.userID);
   return res.send({results});
 })

@@ -6,8 +6,6 @@ async function addUser(username, password) {
     try {
       const res = await axios.post('http://localhost:5000/register', {username: username, password: password});
       // check if new user was added, return either newUser or error
-      console.log("adduser func")
-      console.log(res)
       return res.data;
     } catch (error) {
       // Handle any file read or write errors here
@@ -19,8 +17,6 @@ async function addUser(username, password) {
 // Find user in file
 async function findUser(username, password) {
     const res = await axios.post('http://localhost:5000/login', {username: username, password: password});
-    console.log("findUser");
-    console.log(res.data);
     return res.data;
 }
 
@@ -72,8 +68,6 @@ export const SignUp = (props) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const newUser = await addUser(username, password);
-        console.log("New User: ")
-        console.log(newUser)
         if (newUser === null) {
             console.error(newUser.error);
         }else {// redirect to home 

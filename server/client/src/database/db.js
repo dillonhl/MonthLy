@@ -1,11 +1,10 @@
-console.log("Database File Inititialize");
 const path = require('path');
 const fs = require("fs");
 const sqlite3 = require("sqlite3").verbose();
 const dbWrapper = require("sqlite");
+const bcrypt = require("bcrypt");
 //const crypto = require("crypto");
 const { SimpleTransaction } = require("./simpleTransactionObject");
-console.log("Database File initialize end");
 
 // You may want to have this point to different databases based on your environment
 const databaseFile = path.join(__dirname, 'appdata.db');
@@ -13,7 +12,7 @@ let db;
 
 // Set up our database
 const existingDatabase = fs.existsSync(databaseFile);
-console.log("Database File test");
+
 
 const createUsersTableSQL =
   "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, "+
@@ -22,11 +21,11 @@ const createItemsTableSQL =
   "CREATE TABLE items (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, " +
   "access_token TEXT NOT NULL, transaction_cursor TEXT, bank_name TEXT, " +
   "is_active INTEGER NOT_NULL DEFAULT 1, " +
-  "budget INTEGER NOT_NULL DEFAULT 100, " +
+  "budget INTEGER NOT_NULL DEFAULT 0, " +
   "FOREIGN KEY(user_id) REFERENCES users(id))";
 const createAccountsTableSQL =
   "CREATE TABLE accounts (id TEXT PRIMARY KEY, item_id TEXT NOT NULL, " +
-  "name TEXT, balance REAL DEFAULT 100.00, FOREIGN KEY(item_id) REFERENCES items(id))";
+  "name TEXT, balance REAL DEFAULT 0.00, FOREIGN KEY(item_id) REFERENCES items(id))";
 const createTransactionsTableSQL =
   "CREATE TABLE transactions (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, " +
   "account_id TEXT NOT_NULL, category TEXT, date TEXT, " +
@@ -75,17 +74,20 @@ const initializeDatabase = async function () {
         tableNamesToCreationSQL
       )) {
         if (!tableNames.some((table) => table.name === tableName)) {
-          console.log(`Creating ${tableName} table`);
           await db.run(creationSQL);
         }
       }
-      console.log("Database is up and running!");
       sqlite3.verbose();
     }
   } catch (dbError) {
     console.error(dbError);
   }
 };
+
+  async function checkPassword(plainTextPassword, hashedPassword) {
+    const match = await bcrypt.compare(plainTextPassword, hashedPassword);
+    return match;
+  }
 
   const debugExposeDb = function () {
     return db;
@@ -95,7 +97,6 @@ const initializeDatabase = async function () {
     const result = await db.run(
       `INSERT INTO users(username, password) VALUES("${username}", "${password}")`
     );
-    console.log(result.lastID)
     return result.lastID;
   };
 
@@ -105,8 +106,16 @@ const initializeDatabase = async function () {
   };
 
   const getUser = async function (username, password) {
-    const result = await db.get('SELECT id, username FROM users WHERE username = ? AND password = ?', [username, password]);
-    return result;
+    const res = await db.get('SELECT password, username FROM users WHERE username = ?', [username]);
+    console.log(res);
+    if (res && await checkPassword(password, res.password))
+    {
+      const result = await db.get('SELECT id, username FROM users WHERE username = ?', [username]);
+      return result;
+    }
+    else {
+      return null;
+    }
   };
 
   const getRecentTransactions = async function (userID, accountID) {
@@ -170,7 +179,6 @@ const initializeDatabase = async function () {
       `INSERT INTO budgets (user_id, category, amount) VALUES (?, ?, ?)`, 
       [userID, category, amount]
     );
-    console.log(`add budget ${category}`);
     return;
   }
 
@@ -366,7 +374,6 @@ const getTransactionsByMonth = async function(userID, year, month) {
     SELECT * FROM transactions
     WHERE user_id = '${userID}' AND date >= '${startOfMonth}' AND date < '${endOfMonth}';
     `);
-    //console.log(results);
   return results;
 
 }

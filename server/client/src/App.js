@@ -21,7 +21,6 @@ class App extends React.PureComponent {
 
   toggleForm = (formName) => {
     this.setState({currentForm: formName});
-    console.log(`Switch to form: ${formName}`);
     if (formName === 'HomePage') {
       this.setState({currentPage: formName});
       // create public link token
@@ -32,11 +31,9 @@ class App extends React.PureComponent {
   togglePage = (pageName) => {
     if (pageName !== this.state.currentPage) {
       this.setState({currentPage: pageName});
-      console.log(`Switch for page: ${pageName}`);
     }
     if (pageName === 'logout') {
       this.logout();
-      console.log(`Logging Out, go to Login Page`);
     }
   }
   // reset states
@@ -52,17 +49,14 @@ class App extends React.PureComponent {
 
   //connects to plaid to create temporary link token
   createLinkToken = async (userID) => {
-    console.log(`Creating Link token user userID: ${userID}`)
     
     const res = await axios.post('http://localhost:5000/create_link_token', {userID: userID});
     const data = res.data.link_token
     this.setState({ token: data })
-    console.log(`Creating Link token result ${res.data}`);
   }
 
   // Link bank using link token
   linkBank = async (publicToken) => {
-    console.log("client side public token", publicToken)
     const userID = this.state.userID;
     // Get access token and also populate databases
     const res = await axios.post('http://localhost:5000/get_access_token', {publicToken: publicToken, userID: userID})
@@ -91,7 +85,6 @@ class App extends React.PureComponent {
           this.handleTransactions();
           this.getBalance();
           this.setState({loggedIn: true})
-          console.log('User is connected');
         }
         else {
           this.setState({loggedIn: true})
@@ -121,8 +114,6 @@ class App extends React.PureComponent {
     try {
       const response = await axios.post('http://localhost:5000/get_monthly_transactions', { userID: this.state.userID });
       const allTransactions = response.data.results;
-      console.log("all :")
-      console.log(allTransactions);
       // Initialize an object to store the aggregated data
       const aggregatedData = {};
 

@@ -22,7 +22,7 @@ export const AnalyticsPage = (props) => {
     const today = new Date();
     const currentMonth = today.getMonth() + 1; // Months are zero-based, so add 1
     const currentYear = today.getFullYear();
-    const yearMonthString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}`;
+    //const yearMonthString = `${currentYear}-${currentMonth.toString().padStart(2, '0')}`;
     
     const [highestCategories, setHighestCategories] = useState({});
     const [year, setYear] = useState(currentYear);
